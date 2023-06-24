@@ -26,7 +26,7 @@ Setting up our backend application
 - python manage.py startapp base
 ```
 
-include newly installed app `base` in django _settings.py_ file `installed_apps`
+include newly installed app `'base',` in django _settings.py_ file `installed_apps`
 create our API endpoint `api` within the `base` app and initialize it.
 then create _views.py_, _urls.py_, _serializers.py_ in it.
 
@@ -40,7 +40,7 @@ Setting up our API
 - pip install djangorestframework
 ```
 
-include newly installed app `rest_framework` in django _settings.py_ file `installed_apps`
+include newly installed app `'rest_framework',` in django _settings.py_ file `installed_apps`
 
 - auth_system.urls.py
 
@@ -203,4 +203,32 @@ urlpatterns = [
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     ...
 ]
+```
+
+### CORS Configuration
+
+The Cross Origin Resource Sharing is necessary for our project since we will be making a sending HTTP request from the client (React=3000) which has a different PORT as to the server (Django=8000) so that Django can recognize and allow React to connect and avoid CORS error.
+
+https://github.com/adamchainz/django-cors-headers
+
+```bash
+python -m pip install django-cors-headers
+```
+
+include newly installed app `'corsheaders',` in django _settings.py_ file `installed_apps`
+
+update our `MIDDLEWARE` in project _settings.py_
+
+```bash
+MIDDLEWARE = [
+    ...,
+    'corsheaders.middleware.CorsMiddleware',
+    ...,
+]
+```
+
+we can specify explicitly the origins that should be allowed. There is also the option of allowing all origins. by default is false
+
+```bash
+CORS_ALLOW_ALL_ORIGINS = True
 ```
