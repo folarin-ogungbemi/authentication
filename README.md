@@ -138,7 +138,7 @@ python manage.py createsuperuser
 
 to get the information about the generated token by simplejwt visit https://jwt.io/ and paste the generated token in the `encoded` section to view also the expiration date, the user_id etc .. in the `payload` section. we can customize this token claims here https://django-rest-framework-simplejwt.readthedocs.io/en/latest/customizing_token_claims.html
 
-Customizing our JWT
+#### Customizing our JWT
 
 - the initial access token expires after 5mins
 - the `REFRESH_TOKEN_LIFETIME` is set to `90days` so that as long as the user is not inactive for 90days straight the _access token_ can be regenerated so the user can be kept logged in.
@@ -160,4 +160,47 @@ to add the database table `'rest_framework_simplejwt.token_blacklist',`
 
 ```bash
 python manage.py migrate
+```
+
+#### Customize Token Claims
+
+We want to get the additional information of the user besides its `user_id`.
+To achieve this we can customize the the `TokenObtainPairView` by creating `MyTokenObtainPairView` and specify which additional information of the user we like to get `token['username] = user.username` this token is then returned
+
+- base.api.views.py
+
+```
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+```
+
+- base.api.urls.py
+
+import the customized version
+
+```
+from .views import MyTokenObtainPairView
+from rest_framework_simplejwt.views import (
+    # remove TokenObtainPairView
+    TokenRefreshView,
+)
+
+urlpatterns = [
+    ...
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    ...
+]
 ```
