@@ -138,3 +138,122 @@ return(
 )
 
 ```
+
+### Setting Up AuthContext
+
+Similarly to how Redux store works, we will be using `Context API` built in react to create a store for our user.
+The `context Api` allows components to share data without passing it through many layers of other components. Any component that needs the data can simply access it from the context.
+
+- Create a Component Folder called `context`
+- within the pages folder create `AuthContext.js`
+
+- src.context.AuthContext.js
+
+```
+import {createContext, useState, useEffect } from 'react
+
+const AuthContext = createContext();
+
+export default AuthContext;
+
+```
+
+create a provider within thesame file.
+
+The provider will give the information to the users.
+The value key holds the information we want passed through out the application.
+
+```
+export const AuthProvider = ({children}) =>{
+    return(
+        <AuthContext.Provider value={{'name':'Folarin'}}>
+        {children}
+        </AuthContenxt.Provider>
+    )
+}
+```
+
+- src.App.js
+
+Here we will bring in our AuthProvider information.
+Therein we can specify where the information sent by the provider to be be provided.
+In our case we want it in the `Header` `HomePage` and `LoginPage` therefore we wrap it around them.
+
+To use the value in our individual components we have to import our `AuthContext`
+
+.
+.
+.
+import { AuthProvider } from './context/AuthContext'
+
+```
+export const App = () =>{
+    return(
+        <Router>
+        <AuthProvider>
+
+            <Routes>
+                <Route exact path="/" element={<PrivateRoute/>}>
+                <Route exact path='/' element={<HomePage/>} />
+                </Route>
+                <Route exact path="/login" element={<LoginPage/>}/>
+            </Routes>
+
+        </AuthProvider>
+        </Router>
+    )
+}
+```
+
+- components.Header
+
+```
+import {useContext} from 'react'
+import AuthContext from '../context/AuthContext'
+
+const Header = () => {
+    let {name} = useContext(AuthContext)
+    return(
+        .
+        .
+        .
+        .
+        <p>Hello {name} </p>
+    )
+}
+```
+
+- src.context.AuthContext.js
+
+  Instead of hard coding the value into the AuthProvider, we want the value to be from our backend.
+
+```
+
+export const AuthProvider = ({children}) =>{
+
+    let [authTokens, setAuthTokens] = useState(null)
+    let [user, setUser] = useState(null)
+
+    let loginUser = async (e) =>{
+        e.preventDefault()
+        console.log('form submitted')
+        let response = fetch('http://127.0.0.1:8000/api/token/',{
+            method: 'POST',
+            headers::{
+                'content-Type': 'application/json'
+            },
+            body:JSON.stringify({'username':null, 'password':null})
+        })
+    }
+
+    let contextData = {
+        loginUser:loginUser
+    }
+
+    return(
+        <AuthContext.Provider value={contextData}>
+        {children}
+        </AuthContenxt.Provider>
+    )
+}
+```
