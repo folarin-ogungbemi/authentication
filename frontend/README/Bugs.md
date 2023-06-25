@@ -79,3 +79,14 @@ const App = () => {
 
 export default App
 ```
+
+### Error 4
+
+`node_modules` files wont .gitignore
+
+- Solution
+  Git may have already cached the `node_modules` directory before it was added to `.gitignore``file. the cache has to be removed
+
+```bash
+git rm -r --cached node_modules
+```

@@ -4,6 +4,7 @@ import {
   Route
  } from 'react-router-dom';
 import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
