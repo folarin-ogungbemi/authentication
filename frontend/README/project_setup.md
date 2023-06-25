@@ -304,8 +304,6 @@ export const AuthProvider = ({children}) =>{
 
 ### Navigate User to HomePage after Login
 
-To make sure the user stays logged in to their application we need to get the token from the `local storage`
-
 - set localstorage item to the strigified data
 - import `useHistory` from 'react.router-dom
 - create the variable history to initialize the useHistory method
@@ -337,4 +335,32 @@ import AuthContext from '../context/AuthContext'
 
 let {user} = useContext(AuthContext)
 return !user ? <Navigate to="/login" /> : <Outlet/>
+```
+
+### Keep the User Logged In
+
+To make sure the user stay logged in to their application we need to get the token from the `local storage`
+
+- Check if there is an existing token in `localStorage` if thats true we will parse the token to the state otherwise set the state to null
+- to optimise our code, we call write it as a callback for the state so it only runs once when the component loads and won't be called every time.
+
+```
+(()=>localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
+(()=>localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null)
+```
+
+### Logout User
+
+All we have to do to out user is to set the `user` and the `authToken` to null.
+
+- Then remove the authToken set in the `localstorage`.
+- Redirect user back to `login`
+
+```
+    let logoutUser = () =>{
+        setAuthTokens(null)
+        setUser(null)
+        localStorage.removeItem('authTokens')
+        navigate('/login')
+    }
 ```
