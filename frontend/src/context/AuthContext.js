@@ -1,11 +1,16 @@
 import { createContext, useState} from 'react'
 import jwt_decode from 'jwt-decode'
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext()
+
+
 
 export default AuthContext;
 
 export const AuthProvider = ({children}) =>{
+    
+    let navigate = useNavigate();
 
     let [authToken, setAuthToken] = useState(null)
     let [user, setUser] = useState(null)
@@ -25,8 +30,10 @@ export const AuthProvider = ({children}) =>{
         console.log('response:', response);
 
         if(response.status === 200){
-            setAuthToken(data)
-            setUser(jwt_decode(data.access))
+            setAuthToken(data);
+            setUser(jwt_decode(data.access));
+            localStorage.setItem('authTokens', JSON.stringify(data));
+            navigate('/');
         }else{
             alert('something went wrong!')
         }

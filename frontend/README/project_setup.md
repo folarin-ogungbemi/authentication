@@ -301,3 +301,40 @@ export const AuthProvider = ({children}) =>{
     )
 }
 ```
+
+### Navigate User to HomePage after Login
+
+To make sure the user stays logged in to their application we need to get the token from the `local storage`
+
+- set localstorage item to the strigified data
+- import `useHistory` from 'react.router-dom
+- create the variable history to initialize the useHistory method
+- then push the user back to `homePage`
+- modify the PrivateRoute
+
+- src.context.setAuthContext
+  The `useHistory` method has been updated in v6 see `Bugs.md` Error 5
+
+```
+import {useHistory} from 'react-router-dom'
+
+const history = useHistory()
+
+if(response.status === 200){
+    ...
+    ...
+    localStorage.setItem('authTokens', JSON.stringify(data))
+    history.push('/')
+}
+```
+
+- src.utils.PrivateRoute
+
+We are going check if the user is authenticated by checking if the value `user` exist
+
+```
+import AuthContext from '../context/AuthContext'
+
+let {user} = useContext(AuthContext)
+return !user ? <Navigate to="/login" /> : <Outlet/>
+```

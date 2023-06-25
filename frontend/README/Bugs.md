@@ -90,3 +90,19 @@ export default App
 ```bash
 git rm -r --cached node_modules
 ```
+
+### Error 5
+
+export 'useHistory' (imported as 'useHistory') was not found in 'react-router-dom'
+
+- Solution
+  https://stackoverflow.com/questions/62861269/attempted-import-error-usehistory-is-not-exported-from-react-router-dom
+
+In react-router-dom v6 useHistory() is replaced by useNavigate().
+
+```
+import { useNavigate } from 'react-router-dom';
+
+const navigate = useNavigate();
+navigate('/home');
+```
