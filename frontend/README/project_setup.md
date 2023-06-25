@@ -223,9 +223,42 @@ const Header = () => {
 }
 ```
 
+#### connecting auth tokens
+
 - src.context.AuthContext.js
 
   Instead of hard coding the value into the AuthProvider, we want the value to be from our backend.
+
+Firstly, to be able to login:
+
+- We want to check if we have a `user token` information in the `localStorage`
+  - Set up the `user` and the `authTokens` _useState_
+  - fetch the `url/api/token/` and `post` in it to be able to get the `tokens`.
+    - Remember if we visited our local http://127.0.0.1:8000/api/token/ and navigate to rawdata, the `media type` is `application/json` and the content is a dictionary. We will use this to get the tokens when the values are filled in with the `e.target.value`
+  - then set the key value pair in our `contextData` that will then be rendered.
+    - the value `loginUser` will be desctructure and used in our `LoginPage` when the form is submitted.
+    - we also `preventDefault` before the form is submitted in our loginUser function.
+  - To get the Userdate from the access submitted (remember when we use JWT access token to get the payload including user_id), we will need to use a package called `jwt decode` https://www.npmjs.com/package/jwt-decode.
+
+```bash
+ npm install jwt-decode
+```
+
+```
+import jwt_decode from 'jwt-decode'
+.
+.
+.
+if(response.status === 200){
+    ...
+    setUser(jwt_decode(data.access))
+}
+.
+.
+.
+```
+
+- finally include the updated user from the state in the `contextData` that then can be used in our `components`
 
 ```
 
@@ -237,16 +270,27 @@ export const AuthProvider = ({children}) =>{
     let loginUser = async (e) =>{
         e.preventDefault()
         console.log('form submitted')
-        let response = fetch('http://127.0.0.1:8000/api/token/',{
+        let response = await fetch('http://127.0.0.1:8000/api/token/',{
             method: 'POST',
-            headers::{
+            headers:{
                 'content-Type': 'application/json'
             },
-            body:JSON.stringify({'username':null, 'password':null})
+            body:JSON.stringify({'username':e.target.username.value, 'password':e.target.password.value})
         })
+        let data = await response.json()
+        console.log('data:', data)
+        console.log('response:', response)
+
+        if(response.status == 200){
+            setAuthToken(data)
+            setUser(jwt_decode(data.access))
+        }else{
+            alert('something went wrong!')
+        }
     }
 
     let contextData = {
+        user:user,
         loginUser:loginUser
     }
 
